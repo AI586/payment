@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="checkout_com_acquirer_button">
+        <form t-if="acquirer.checkout_merchant_key" class="payment-form" method="POST" action="https://merchant.com/successUrl">
+
+            <input type="hidden" id="publicKey" name="key" t-att-value='key' />
+            <input type="hidden" id="paymentToken" name="tx_id" t-att-value='tx_id' />
+            <input type="hidden" name="txnid" t-att-value='txnid' />
+            <input type="hidden" id="amount_tot" name="amount" t-att-value='amount' />
+            <input type="hidden" name="firstname" t-att-value='firstname' />
+            <input type="hidden" name="email" t-att-value='email' />
+            <input type="hidden" name="phone" t-att-value='phone'/>
+            <input type="hidden" id="currencyCode" name="currencyCode" t-att-value="currencyCode"/>
+            <input type="hidden" id="contryCode" name="contryCode" t-att-value="contryCode"/>
+            <input type="hidden" id="email_customer" name="email" t-att-value='email' />
+            <input type="hidden" name="service_provider" t-att-value='service_provider' />
+            <input type="hidden" id="transaction_id" name="transaction_id" value='' />
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <t t-if="return_url">
+                <input type="hidden" name="return_url" t-att-value="return_url"/>
+            </t>
+            <input type="hidden" name="reference" t-att-value="reference"/>
+            <input type="hidden" name="currency" t-att-value="currency"/>
+            <script src="https://cdn.checkout.com/sandbox/js/checkout.js"></script>
+            <script>
+                var int_currencies = [
+                    'BIF', 'XAF', 'XPF', 'CLP', 'KMF', 'DJF', 'GNF', 'JPY', 'MGA', 'PYGí',
+                    'RWF', 'KRW', 'VUV', 'VND', 'XOF'
+                ];
+                var currency = $("input[name='currency']").val();
+                var amount = parseFloat($("input[name='amount']").val() || '0.0');
+                if (!_.contains(int_currencies, currency)) {
+                    amount = amount*100;
+                }
+            Checkout.configure({
+                publicKey: $('#publicKey').val(),
+                paymentToken: $('#paymentToken').val(),
+                customerEmail: $('#email_customer').val(),
+                value: amount,
+                currency: $('#currencyCode').val(),
+                countryCode: $('#contryCode').val(),
+                payButtonSelector: '#payNow'
+            });
+            $('#payNow').addClass('o_website_payment_form');
+
+            </script>
+            
+            <button type="submit" id="payNow" t-att-class="submit_class" width="100px">
+                <span t-if="submit_txt"><t t-esc="submit_txt"/> <span class="fa fa-long-arrow-right"/></span>
+            </button>
+            <script type="text/javascript" src="/payment_checkout/static/src/js/checkout_payment.js"></script>
+            
+        </form>
+    </template>
+</odoo>
